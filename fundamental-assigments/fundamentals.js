@@ -1,89 +1,86 @@
-'use strict'
+"use strict";
+//Variables
 
-// //Variables
+const country = 'Vietnam';
+const continent = 'Asia';
+let population = 100;
 
-// const country = 'Vietnam';
-// const continent = 'Asia';
-// let population = 100;
+console.log(country, continent, population);
 
-// console.log(country, continent, population);
+//Data types
+let isIsland = false;
+let language;
+console.log(typeof country);
+console.log(typeof continent);
+console.log(typeof population);
+console.log(typeof isIsland);
+console.log(typeof language);
 
-// //Data types
-// let isIsland = false;
-// let language;
-// console.log(typeof country);
-// console.log(typeof continent);
-// console.log(typeof population);
-// console.log(typeof isIsland);
-// console.log(typeof language);
+//let, const, var
+language = 'vietnamese';
 
-// //let, const, var
-// language = 'vietnamese';
+//basic operators
+console.log(population / 2);
+population++;
+console.log(population);
+console.log(population > 6);
+console.log(population < 33);
+const description = country + ' is in ' + continent + ',' + ' and its ' + population + ' million people speak ' + language
+console.log(description);
 
-// //basic operators
-// console.log(population / 2);
-// population++;
-// console.log(population);
-// console.log(population > 6);
-// console.log(population < 33);
-// const description = country + ' is in ' + continent + ',' + ' and its ' + population + ' million people speak ' + language
-// console.log(description);
+//template literals
+console.log(`${country} is in ${continent}, and its ${population} million people speak ${language}`);
 
-// //template literals
-// console.log(`${country} is in ${continent}, and its ${population} million people speak ${language}`);
+//Type Conversion and Coercion
+console.log('9' - '5');
+console.log('19' - '13' + '17');
+console.log('19' - '13' + 17);
+console.log('123' < 57);
+console.log(5 + 6 + '4' + 9 - 4 - 2);
 
-// //Type Conversion and Coercion
-// console.log('9' - '5');
-// console.log('19' - '13' + '17');
-// console.log('19' - '13' + 17);
-// console.log('123' < 57);
-// console.log(5 + 6 + '4' + 9 - 4 - 2);
+//Equality Operators: == vs ===
+const numNeighbors = Number(prompt('How many neighbors countries does your country have?'))
+if (numNeighbors === 1) {
+    console.log('Only 1 border!');
+}else if (numNeighbors > 1) {
+    console.log('More than 1 border');
+}else {
+    console.log('No borders')
+}
 
-// //Equality Operators: == vs ===
-// // const numNeighbors = Number(prompt('How many neighbors countries does your country have?'))
-// // if (numNeighbors === 1) {
-// //     console.log('Only 1 border!');
-// // }else if (numNeighbors > 1) {
-// //     console.log('More than 1 border');
-// // }else {
-// //     console.log('No borders')
-// // }
+//Logical Operators
+if (language === 'english' && population < 50 && !isIsland) {
+    console.log(`You should live in ${country}`)
+}else {
+    console.log(`${country} does not meet your criteria`)
+}
 
-// //Logical Operators
-// if (language === 'english' && population < 50 && !isIsland) {
-//     console.log(`You should live in ${country}`)
-// }else {
-//     console.log(`${country} does not meet your criteria`)
-// }
+//The switch statement
+switch(language) {
+    case 'chinese':
+    case 'mandarin':
+        console.log('MOST number of native speakers!');
+        break;
+    case 'spanish':
+        console.log('2nd place in number of native speakers');
+        break;
+    case 'english':
+        console.log('3rd place')
+        break;
+    case 'hindi':
+        console.log('Number 4')
+        break;
+    case 'arabic':
+        console.log('5th most spoken language')
+        break;
+    default:
+        console.log('Great language too')
+        break;
+}
 
-// //The switch statement
-// switch(language) {
-//     case 'chinese':
-//     case 'mandarin':
-//         console.log('MOST number of native speakers!');
-//         break;
-//     case 'spanish':
-//         console.log('2nd place in number of native speakers');
-//         break;   
-//     case 'english':
-//         console.log('3rd place')
-//         break;
-//     case 'hindi':
-//         console.log('Number 4')
-//         break;
-//     case 'arabic':
-//         console.log('5th most spoken language')
-//         break;
-//     default:
-//         console.log('Great language too')
-//         break; 
-// }
-
-// //The Conditional (Ternary) Operator
-// population > 33 ? console.log(`${country}'s population is above average`)
-// :console.log(`${country}'s population is below average`);
-
-
+//The Conditional (Ternary) Operator
+population > 33 ? console.log(`${country}'s population is above average`)
+:console.log(`${country}'s population is below average`);
 
 //PART 2
 
@@ -99,7 +96,6 @@ console.log(vietnam)
 console.log(finland)
 console.log(canada)
 
-
 //Function Declarations vs. Expressions
 function percentageOfWorld1(population) {
     return (population / 7900) * 100
@@ -111,7 +107,6 @@ finland = percentageOfWorld1(6);
 console.log(finland);
 canada = percentageOfWorld1(39)
 console.log(canada);
-
 
 const percentageOfWorld2 = function(population) {
     return (population / 7900) * 100
@@ -153,7 +148,6 @@ if (!neighbors.includes('Germany')) {
 console.log(neighbors.indexOf('China'))
 neighbors[0] = 'Finland'
 console.log(neighbors);
-
 
 //Introduction to Objects + Objects Methods
 const myCountry = {
@@ -210,3 +204,7 @@ while(i < populations.length) {
     i++;
 }
 console.log(percentage3);
+
+
+
+
