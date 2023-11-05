@@ -61,38 +61,83 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function (movements) {
+//Display Movements
+const displayMovements = currentUser => {
   containerMovements.innerHTML = '';
-  movements.forEach(function (value, i) {
+  currentUser.movements.forEach((value, i) => {
     let type;
     value > 0 ? (type = 'deposit') : (type = 'withdrawal');
     const html = `<div class="movements__row">
     <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
-    <div class="movements__value">${value}</div>
+    <div class="movements__value">${value} €</div>
     </div>`;
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-displayMovements(account1.movements);
 
-const calcDisplayBalance = function (movements) {
-  const balance = movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance} EUR`;
+//Display Balance
+const calcDisplayBalance = currentUser => {
+  const balance = currentUser.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${balance} €`;
 };
-calcDisplayBalance(account1.movements);
 
-const createUsername = function (accs) {
-  accs.forEach(function (acc) {
-    const usernames = acc.owner
+//Display Summary
+const calcDisplaySummary = currentUser => {
+  const incomes = currentUser.movements
+    .filter(mov => mov > 0)
+    .reduce((sum, mov) => sum + mov, 0);
+  labelSumIn.textContent = `${incomes} €`;
+  const out = currentUser.movements
+    .filter(mov => mov < 0)
+    .reduce((sum, mov) => sum + mov, 0);
+  labelSumOut.textContent = `${Math.abs(out)} €`;
+  const interest = currentUser.movements
+    .filter(mov => mov > 0)
+    .map(deposit => {
+      return (deposit * currentUser.interestRate) / 100;
+    })
+    .filter(int => int >= 1)
+    .reduce((acc, int) => acc + int, 0);
+  labelSumInterest.textContent = `${interest} €`;
+};
+
+//Create Username
+const createUsername = accs => {
+  accs.forEach(acc => {
+    acc.usernames = acc.owner
       .toLowerCase()
       .split(' ')
       .map(letter => letter[0])
       .join('');
-    //console.log(usernames);
   });
 };
-
 createUsername(accounts);
+
+//Event handler
+let currentUser;
+btnLogin.addEventListener('click', function (e) {
+  e.preventDefault();
+  currentUser = accounts.find(
+    account => account.usernames === inputLoginUsername.value
+  );
+  console.log(currentUser);
+  if (currentUser?.pin === Number(inputLoginPin.value)) {
+    //Display UI and welcome message
+    containerApp.style.opacity = 100;
+    labelWelcome.textContent = `Welcome back, ${
+      currentUser.owner.split(' ')[0]
+    }`;
+    //Clear input fields
+    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginPin.blur();
+    //Display balance
+    calcDisplayBalance(currentUser);
+    //Display summary
+    calcDisplaySummary(currentUser);
+    //Display movements
+    displayMovements(currentUser);
+  }
+});
 
 /////////////////////////////////////////////////
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
@@ -400,6 +445,7 @@ TEST DATA 2: [16, 6, 10, 5, 6, 1, 4]
 
 GOOD LUCK 😀
 */
+/*
 const calcAverageHumanAge = ages => {
   return ages
   .map(age => (age <= 2 ? 2 * age : 16 + age * 4))
@@ -408,3 +454,20 @@ const calcAverageHumanAge = ages => {
 }
 console.log(calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]));
 console.log(calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]));
+*/
+
+///////////////////////////////////////
+// The find Method
+/*
+const firstWithdrawal = movements.find(mov => mov < 0);
+console.log(movements);
+console.log(firstWithdrawal);
+
+console.log(accounts);
+
+for (const mov of movements)
+  if (mov < 0) {
+    console.log(mov);
+    break;
+  }
+*/
