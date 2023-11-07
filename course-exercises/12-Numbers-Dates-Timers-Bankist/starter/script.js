@@ -81,173 +81,348 @@ const inputClosePin = document.querySelector('.form__input--pin');
 /////////////////////////////////////////////////
 // Functions
 
-const displayMovements = function (movements, sort = false) {
+//Display Movements
+const displayMovements = (currentUser, sorted = false) => {
   containerMovements.innerHTML = '';
-
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
-
-  movs.forEach(function (mov, i) {
-    const type = mov > 0 ? 'deposit' : 'withdrawal';
-
-    const html = `
-      <div class="movements__row">
-        <div class="movements__type movements__type--${type}">${
-      i + 1
-    } ${type}</div>
-        <div class="movements__value">${mov}€</div>
-      </div>
-    `;
-
+  const movs = sorted
+    ? currentUser.movements.slice().sort((a, b) => a - b)
+    : currentUser.movements;
+  movs.forEach((value, i) => {
+    let type;
+    value > 0 ? (type = 'deposit') : (type = 'withdrawal');
+    const html = `<div class="movements__row">
+    <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
+    <div class="movements__value">${value.toFixed(2)} €</div>
+    </div>`;
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
 
-const calcDisplayBalance = function (acc) {
-  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${acc.balance}€`;
+//Display Balance
+const calcDisplayBalance = currentUser => {
+  currentUser.balance = currentUser.movements.reduce(
+    (acc, mov) => acc + mov,
+    0
+  );
+  labelBalance.textContent = `${currentUser.balance.toFixed(2)} €`;
 };
 
-const calcDisplaySummary = function (acc) {
-  const incomes = acc.movements
+//Display Summary
+const calcDisplaySummary = currentUser => {
+  const incomes = currentUser.movements
     .filter(mov => mov > 0)
-    .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes}€`;
-
-  const out = acc.movements
+    .reduce((sum, mov) => sum + mov, 0);
+  labelSumIn.textContent = `${incomes.toFixed(2)} €`;
+  const out = currentUser.movements
     .filter(mov => mov < 0)
-    .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out)}€`;
-
-  const interest = acc.movements
+    .reduce((sum, mov) => sum + mov, 0);
+  labelSumOut.textContent = `${Math.abs(out).toFixed(2)} €`;
+  const interest = currentUser.movements
     .filter(mov => mov > 0)
-    .map(deposit => (deposit * acc.interestRate) / 100)
-    .filter((int, i, arr) => {
-      // console.log(arr);
-      return int >= 1;
+    .map(deposit => {
+      return (deposit * currentUser.interestRate) / 100;
     })
+    .filter(int => int >= 1)
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest}€`;
+  labelSumInterest.textContent = `${interest.toFixed(2)} €`;
 };
 
-const createUsernames = function (accs) {
-  accs.forEach(function (acc) {
+//Create Username
+const createUsername = accs => {
+  accs.forEach(acc => {
     acc.username = acc.owner
       .toLowerCase()
       .split(' ')
-      .map(name => name[0])
+      .map(letter => letter[0])
       .join('');
   });
 };
-createUsernames(accounts);
+createUsername(accounts);
 
-const updateUI = function (acc) {
-  // Display movements
-  displayMovements(acc.movements);
-
-  // Display balance
-  calcDisplayBalance(acc);
-
-  // Display summary
-  calcDisplaySummary(acc);
+//Update UI
+const updateUI = currentUser => {
+  //Display balance
+  calcDisplayBalance(currentUser);
+  //Display summary
+  calcDisplaySummary(currentUser);
+  //Display movements
+  displayMovements(currentUser);
 };
 
-///////////////////////////////////////
-// Event handlers
-let currentAccount;
+//Event handlers
 
+//Implement login
+let currentUser;
 btnLogin.addEventListener('click', function (e) {
-  // Prevent form from submitting
   e.preventDefault();
-
-  currentAccount = accounts.find(
-    acc => acc.username === inputLoginUsername.value
+  currentUser = accounts.find(
+    account => account.username === inputLoginUsername.value
   );
-  console.log(currentAccount);
-
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
-    // Display UI and message
-    labelWelcome.textContent = `Welcome back, ${
-      currentAccount.owner.split(' ')[0]
-    }`;
+  console.log(currentUser);
+  if (currentUser?.pin === +inputLoginPin.value) {
+    //Display UI and welcome message
     containerApp.style.opacity = 100;
+    labelWelcome.textContent = `Welcome back, ${
+      currentUser.owner.split(' ')[0]
+    }`;
 
-    // Clear input fields
+    //Clear input fields
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
 
-    // Update UI
-    updateUI(currentAccount);
+    //Update UI
+    updateUI(currentUser);
   }
 });
 
-btnTransfer.addEventListener('click', function (e) {
+//Implement transfer
+btnTransfer.addEventListener('click', e => {
   e.preventDefault();
-  const amount = Number(inputTransferAmount.value);
   const receiverAcc = accounts.find(
     acc => acc.username === inputTransferTo.value
   );
-  inputTransferAmount.value = inputTransferTo.value = '';
-
+  console.log(receiverAcc);
   if (
-    amount > 0 &&
+    //Check if the receiverAccount exists and
+    //the transfer amount must be larger than 0 and <= current account balance
+    //and cannot transfer to the current account
     receiverAcc &&
-    currentAccount.balance >= amount &&
-    receiverAcc?.username !== currentAccount.username
+    +inputTransferAmount.value > 0 &&
+    currentUser.balance >= +inputTransferAmount.value &&
+    currentUser.username !== receiverAcc.username
   ) {
-    // Doing the transfer
-    currentAccount.movements.push(-amount);
-    receiverAcc.movements.push(amount);
-
-    // Update UI
-    updateUI(currentAccount);
+    currentUser.movements.push(-inputTransferAmount.value);
+    receiverAcc.movements.push(+inputTransferAmount.value);
   }
+
+  //Clear input fields
+  inputTransferTo.value = inputTransferAmount.value = '';
+  inputTransferAmount.blur();
+
+  //Update UI
+  updateUI(currentUser);
 });
 
-btnLoan.addEventListener('click', function (e) {
+//Implement request loan
+btnLoan.addEventListener('click', e => {
   e.preventDefault();
-
-  const amount = Number(inputLoanAmount.value);
-
-  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-    // Add movement
-    currentAccount.movements.push(amount);
-
-    // Update UI
-    updateUI(currentAccount);
-  }
-  inputLoanAmount.value = '';
-});
-
-btnClose.addEventListener('click', function (e) {
-  e.preventDefault();
-
   if (
-    inputCloseUsername.value === currentAccount.username &&
-    Number(inputClosePin.value) === currentAccount.pin
+    +inputLoanAmount.value > 0 &&
+    currentUser.movements.some(
+      mov => mov >= 0.1 * +inputLoanAmount.value
+    )
+  ) {
+    currentUser.movements.push(+inputLoanAmount.value);
+
+    //Clear input fields
+    inputLoanAmount.value = '';
+    inputLoanAmount.blur();
+
+    //Update UI
+    updateUI(currentUser);
+  }
+});
+
+//Implement close account
+btnClose.addEventListener('click', e => {
+  e.preventDefault();
+  //Find and delete account
+  if (
+    currentUser?.username === inputCloseUsername.value &&
+    currentUser?.pin === +inputClosePin.value
   ) {
     const index = accounts.findIndex(
-      acc => acc.username === currentAccount.username
+      acc => acc.username === inputCloseUsername.value
     );
-    console.log(index);
-    // .indexOf(23)
-
-    // Delete account
     accounts.splice(index, 1);
-
-    // Hide UI
-    containerApp.style.opacity = 0;
   }
 
+  //Clear input fields
   inputCloseUsername.value = inputClosePin.value = '';
+  inputClosePin.blur();
+
+  //Hide UI
+  containerApp.style.opacity = 0;
 });
 
+//Implement sort
 let sorted = false;
-btnSort.addEventListener('click', function (e) {
+btnSort.addEventListener('click', e => {
   e.preventDefault();
-  displayMovements(currentAccount.movements, !sorted);
+  displayMovements(currentUser, !sorted);
   sorted = !sorted;
 });
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
+/*
+///////////////////////////////////////
+// Converting and Checking Numbers
+console.log(23 === 23.0);
+
+// Base 10 - 0 to 9. 1/10 = 0.1. 3/10 = 3.3333333
+// Binary base 2 - 0 1
+console.log(0.1 + 0.2);
+console.log(0.1 + 0.2 === 0.3);
+ 
+// Conversion
+console.log(Number('23'));
+console.log(+'23');
+
+// Parsing
+console.log(Number.parseInt('30px', 10));
+console.log(Number.parseInt('e23', 10));
+
+console.log(Number.parseInt('  2.5rem  '));
+console.log(Number.parseFloat('  2.5rem  '));
+
+// console.log(parseFloat('  2.5rem  '));
+
+// Check if value is NaN
+console.log(Number.isNaN(20)); //false
+console.log(Number.isNaN('20')); //false
+console.log(Number.isNaN(+'20X')); //true
+console.log(23 / 0);
+console.log(Number.isNaN(23 / 0)); //false (= infinity -> not NaN)
+
+// Checking if value is number
+console.log(Number.isFinite(20)); //true
+console.log(Number.isFinite('20')); //false
+console.log(Number.isFinite(+'20X')); //false
+console.log(Number.isFinite(23 / 0)); //false cuz the result is infinity(only values of the type number and are finite return true)
+
+console.log(Number.isInteger(23));
+console.log(Number.isInteger(23.0));
+console.log(Number.isInteger(23 / 0));
+*/
+
+///////////////////////////////////////
+// Math and Rounding
+/*
+console.log(Math.sqrt(25)); //5
+console.log(25 ** (1 / 2)); //5
+console.log(8 ** (1 / 3)); //2
+
+console.log(Math.max(5, 18, 23, 11, 2)); //23
+console.log(Math.max(5, 18, '23', 11, 2)); //23
+console.log(Math.max(5, 18, '23px', 11, 2)); //NaN
+
+console.log(Math.min(5, 18, 23, 11, 2)); //2
+
+console.log(Math.PI * Number.parseFloat('10px') ** 2); //3.1415.. * 10 ** 2
+
+console.log(Math.trunc(Math.random() * 6) + 1); //random num from 1 to 5
+
+const randomInt = (min, max) =>
+  Math.floor(Math.random() * (max - min) + 1) + min;
+// 0...1 -> 0...(max - min) -> min...max
+// console.log(randomInt(10, 20));
+
+// Rounding integers
+console.log(Math.round(23.3)); //23
+console.log(Math.round(23.9)); //24
+
+console.log(Math.ceil(23.3)); //24
+console.log(Math.ceil(23.9)); //24
+
+console.log(Math.floor(23.3)); //23
+console.log(Math.floor('23.9')); //23
+
+console.log(Math.trunc(23.3)); //23
+
+console.log(Math.trunc(-23.3)); //-23
+console.log(Math.floor(-23.3));//-24
+
+// Rounding decimals
+console.log((2.7).toFixed(0)); //3
+console.log((2.7).toFixed(3)); //2.700
+console.log((2.345).toFixed(2)); //2.35
+console.log(+(2.345).toFixed(2)); //2.35
+*/
+
+///////////////////////////////////////
+// The Remainder Operator
+/*
+console.log(5 % 2); //1
+console.log(5 / 2); // 5 = 2 * 2 + 1
+
+console.log(8 % 3); //2
+console.log(8 / 3); // 8 = 2 * 3 + 2
+
+console.log(6 % 2); //0
+console.log(6 / 2); //3
+
+console.log(7 % 2); //1
+console.log(7 / 2); //3.5
+
+const isEven = n => n % 2 === 0;
+console.log(isEven(8)); //true
+console.log(isEven(23)); //false
+console.log(isEven(514)); //true
+
+labelBalance.addEventListener('click', () => {
+  [...document.querySelectorAll('.movements__row')].forEach((mov, i) => {
+    if (i % 2 === 0) {
+      mov.style.backgroundColor = 'orangered'
+    }
+    if (i % 3 === 0) {
+      mov.style.backgroundColor = 'beige'
+    }
+  });
+});
+*/
+
+///////////////////////////////////////
+// Numeric Separators
+/*
+// 287,460,000,000
+const diameter = 287_460_000_000;
+console.log(diameter);
+
+const price = 345_99;
+console.log(price);
+
+const transferFee1 = 15_00;
+const transferFee2 = 1_500;
+
+const PI = 3.1415;
+console.log(PI);
+
+console.log(Number('230_000'));
+console.log(parseInt('230_000'));
+
+
+///////////////////////////////////////
+// Working with BigInt
+console.log(2 ** 53 - 1);
+console.log(Number.MAX_SAFE_INTEGER);
+console.log(2 ** 53 + 1);
+console.log(2 ** 53 + 2);
+console.log(2 ** 53 + 3);
+console.log(2 ** 53 + 4);
+
+console.log(4838430248342043823408394839483204n);
+console.log(BigInt(48384302));
+
+// Operations
+console.log(10000n + 10000n);
+console.log(36286372637263726376237263726372632n * 10000000n);
+// console.log(Math.sqrt(16n));
+
+const huge = 20289830237283728378237n;
+const num = 23;
+console.log(huge * BigInt(num));
+
+// Exceptions
+console.log(20n > 15);
+console.log(20n === 20);
+console.log(typeof 20n);
+console.log(20n == '20');
+
+console.log(huge + ' is REALLY big!!!');
+
+// Divisions
+console.log(11n / 3n);
+console.log(10 / 3);
+*/
