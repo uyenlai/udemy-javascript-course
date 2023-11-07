@@ -77,8 +77,11 @@ const displayMovements = currentUser => {
 
 //Display Balance
 const calcDisplayBalance = currentUser => {
-  const balance = currentUser.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance} €`;
+  currentUser.balance = currentUser.movements.reduce(
+    (acc, mov) => acc + mov,
+    0
+  );
+  labelBalance.textContent = `${currentUser.balance} €`;
 };
 
 //Display Summary
@@ -104,7 +107,7 @@ const calcDisplaySummary = currentUser => {
 //Create Username
 const createUsername = accs => {
   accs.forEach(acc => {
-    acc.usernames = acc.owner
+    acc.username = acc.owner
       .toLowerCase()
       .split(' ')
       .map(letter => letter[0])
@@ -113,12 +116,22 @@ const createUsername = accs => {
 };
 createUsername(accounts);
 
-//Event handler
+//Update UI
+const updateUI = (currentUser) => {
+  //Display balance
+  calcDisplayBalance(currentUser);
+  //Display summary
+  calcDisplaySummary(currentUser);
+  //Display movements
+  displayMovements(currentUser);
+};
+
+//Event handlers
 let currentUser;
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault();
   currentUser = accounts.find(
-    account => account.usernames === inputLoginUsername.value
+    account => account.username === inputLoginUsername.value
   );
   console.log(currentUser);
   if (currentUser?.pin === Number(inputLoginPin.value)) {
@@ -127,16 +140,41 @@ btnLogin.addEventListener('click', function (e) {
     labelWelcome.textContent = `Welcome back, ${
       currentUser.owner.split(' ')[0]
     }`;
+
     //Clear input fields
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
-    //Display balance
-    calcDisplayBalance(currentUser);
-    //Display summary
-    calcDisplaySummary(currentUser);
-    //Display movements
-    displayMovements(currentUser);
+
+    //Update UI
+    updateUI(currentUser)
   }
+});
+
+btnTransfer.addEventListener('click', e => {
+  e.preventDefault();
+  const receiverAcc = accounts.find(
+    acc => acc.username === inputTransferTo.value
+  );
+  console.log(receiverAcc);
+  if (
+    //Check if the receiverAccount exists and
+    //the transfer amount must be larger than 0 and <= current account balance
+    //and cannot transfer to the current account
+    receiverAcc &&
+    inputTransferAmount.value > 0 &&
+    currentUser.balance >= inputTransferAmount.value &&
+    currentUser.username !== receiverAcc.username
+  ) {
+    currentUser.movements.push(-inputTransferAmount.value);
+    receiverAcc.movements.push(Number(inputTransferAmount.value));
+  }
+
+  //Clear input fields
+  inputTransferTo.value = inputTransferAmount.value = '';
+  inputTransferAmount.blur()
+  
+  //Update UI
+  updateUI(currentUser)
 });
 
 /////////////////////////////////////////////////
