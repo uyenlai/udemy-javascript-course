@@ -127,6 +127,8 @@ const updateUI = currentUser => {
 };
 
 //Event handlers
+
+//Implement login
 let currentUser;
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault();
@@ -150,6 +152,7 @@ btnLogin.addEventListener('click', function (e) {
   }
 });
 
+//Implement transfer
 btnTransfer.addEventListener('click', e => {
   e.preventDefault();
   const receiverAcc = accounts.find(
@@ -177,6 +180,27 @@ btnTransfer.addEventListener('click', e => {
   updateUI(currentUser);
 });
 
+//Implement request loan
+btnLoan.addEventListener('click', e => {
+  e.preventDefault();
+  if (
+    Number(inputLoanAmount.value) > 0 &&
+    currentUser.movements.some(
+      mov => mov >= 0.1 * Number(inputLoanAmount.value)
+    )
+  ) {
+    currentUser.movements.push(Number(inputLoanAmount.value))
+
+    //Clear input fields
+  inputLoanAmount.value = '';
+  inputLoanAmount.blur();
+
+  //Update UI
+  updateUI(currentUser);
+  }
+});
+
+//Implement close account
 btnClose.addEventListener('click', e => {
   e.preventDefault();
   //Find and delete account
@@ -196,7 +220,6 @@ btnClose.addEventListener('click', e => {
 
   //Hide UI
   containerApp.style.opacity = 0;
-
 });
 
 /////////////////////////////////////////////////
@@ -530,4 +553,51 @@ for (const mov of movements)
     console.log(mov);
     break;
   }
+*/
+
+///////////////////////////////////////
+// some and every
+/*
+console.log(movements);
+
+// EQUALITY
+console.log(movements.includes(-130));
+
+// SOME: CONDITION
+console.log(movements.some(mov => mov === -130));
+
+const anyDeposits = movements.some(mov => mov > 0);
+console.log(anyDeposits);
+
+// EVERY
+console.log(movements.every(mov => mov > 0));
+console.log(account4.movements.every(mov => mov > 0));
+
+// Separate callback
+const deposit = mov => mov > 0;
+console.log(movements.some(deposit));
+console.log(movements.every(deposit));
+console.log(movements.filter(deposit));
+
+
+///////////////////////////////////////
+// flat and flatMap
+const arr = [[1, 2, 3], [4, 5, 6], 7, 8];
+console.log(arr.flat());
+
+const arrDeep = [[[1, 2], 3], [4, [5, 6]], 7, 8];
+console.log(arrDeep.flat(2));
+
+// flat
+const overalBalance = accounts
+  .map(acc => acc.movements)
+  .flat()
+  .reduce((acc, mov) => acc + mov, 0);
+console.log(overalBalance);
+
+// flatMap
+const overalBalance2 = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((acc, mov) => acc + mov, 0);
+console.log(overalBalance2);
 */
