@@ -117,7 +117,7 @@ const createUsername = accs => {
 createUsername(accounts);
 
 //Update UI
-const updateUI = (currentUser) => {
+const updateUI = currentUser => {
   //Display balance
   calcDisplayBalance(currentUser);
   //Display summary
@@ -146,7 +146,7 @@ btnLogin.addEventListener('click', function (e) {
     inputLoginPin.blur();
 
     //Update UI
-    updateUI(currentUser)
+    updateUI(currentUser);
   }
 });
 
@@ -161,20 +161,42 @@ btnTransfer.addEventListener('click', e => {
     //the transfer amount must be larger than 0 and <= current account balance
     //and cannot transfer to the current account
     receiverAcc &&
-    inputTransferAmount.value > 0 &&
-    currentUser.balance >= inputTransferAmount.value &&
+    Number(inputTransferAmount.value) > 0 &&
+    currentUser.balance >= Number(inputTransferAmount.value) &&
     currentUser.username !== receiverAcc.username
   ) {
-    currentUser.movements.push(-inputTransferAmount.value);
+    currentUser.movements.push(-Number(inputTransferAmount.value));
     receiverAcc.movements.push(Number(inputTransferAmount.value));
   }
 
   //Clear input fields
   inputTransferTo.value = inputTransferAmount.value = '';
-  inputTransferAmount.blur()
-  
+  inputTransferAmount.blur();
+
   //Update UI
-  updateUI(currentUser)
+  updateUI(currentUser);
+});
+
+btnClose.addEventListener('click', e => {
+  e.preventDefault();
+  //Find and delete account
+  if (
+    currentUser?.username === inputCloseUsername.value &&
+    currentUser?.pin === Number(inputClosePin.value)
+  ) {
+    const index = accounts.findIndex(
+      acc => acc.username === inputCloseUsername.value
+    );
+    accounts.splice(index, 1);
+  }
+
+  //Clear input fields
+  inputCloseUsername.value = inputClosePin.value = '';
+  inputClosePin.blur();
+
+  //Hide UI
+  containerApp.style.opacity = 0;
+
 });
 
 /////////////////////////////////////////////////
