@@ -80,7 +80,6 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 /////////////////////////////////////////////////
 // Functions
-
 //Display Movements
 const displayMovements = (currentUser, sorted = false) => {
   containerMovements.innerHTML = '';
@@ -88,10 +87,16 @@ const displayMovements = (currentUser, sorted = false) => {
     ? currentUser.movements.slice().sort((a, b) => a - b)
     : currentUser.movements;
   movs.forEach((value, i) => {
+    const movDate = new Date(currentUser.movementsDates[i]);
+    const day = movDate.getDate().toString().padStart(2, '0');
+    const month = (movDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = movDate.getFullYear();
+    const date = `${day}/${month}/${year}`;
     let type;
     value > 0 ? (type = 'deposit') : (type = 'withdrawal');
     const html = `<div class="movements__row">
     <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
+    <div class="movements__date">${date}</div>
     <div class="movements__value">${value.toFixed(2)} €</div>
     </div>`;
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -150,10 +155,15 @@ const updateUI = currentUser => {
 };
 
 //Event handlers
+let currentUser;
+
+// //Fake login
+// currentUser = account1;
+// containerApp.style.opacity = 100;
+// updateUI(currentUser);
 
 //Implement login
-let currentUser;
-btnLogin.addEventListener('click', function (e) {
+btnLogin.addEventListener('click', e => {
   e.preventDefault();
   currentUser = accounts.find(
     account => account.username === inputLoginUsername.value
@@ -169,6 +179,15 @@ btnLogin.addEventListener('click', function (e) {
     //Clear input fields
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
+
+    //Display date
+    const now = new Date();
+    const day = now.getDate().toString().padStart(2, '0');
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const year = now.getFullYear();
+    const hour = now.getHours().toString().padStart(2, '0');
+    const min = now.getMinutes().toString().padStart(2, '0');
+    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
 
     //Update UI
     updateUI(currentUser);
@@ -192,7 +211,10 @@ btnTransfer.addEventListener('click', e => {
     currentUser.username !== receiverAcc.username
   ) {
     currentUser.movements.push(-inputTransferAmount.value);
+    currentUser.movementsDates.push(new Date().toISOString())
     receiverAcc.movements.push(+inputTransferAmount.value);
+    receiverAcc.movementsDates.push(new Date().toISOString())
+
   }
 
   //Clear input fields
@@ -208,11 +230,10 @@ btnLoan.addEventListener('click', e => {
   e.preventDefault();
   if (
     +inputLoanAmount.value > 0 &&
-    currentUser.movements.some(
-      mov => mov >= 0.1 * +inputLoanAmount.value
-    )
+    currentUser.movements.some(mov => mov >= 0.1 * +inputLoanAmount.value)
   ) {
     currentUser.movements.push(+inputLoanAmount.value);
+    currentUser.movementsDates.push(new Date().toISOString())
 
     //Clear input fields
     inputLoanAmount.value = '';
@@ -425,4 +446,103 @@ console.log(huge + ' is REALLY big!!!');
 // Divisions
 console.log(11n / 3n);
 console.log(10 / 3);
+*/
+
+///////////////////////////////////////
+// Creating Dates
+
+// Create a date
+/*
+const now = new Date();
+console.log(now);
+
+console.log(new Date('Aug 02 2020 18:05:41'));
+console.log(new Date('December 24, 2015'));
+console.log(new Date(account1.movementsDates[0]));
+
+console.log(new Date(2037, 10, 19, 15, 23, 5));
+console.log(new Date(2037, 10, 31));
+
+console.log(new Date(0));
+console.log(new Date(3 * 24 * 60 * 60 * 1000));
+
+
+// Working with dates
+const future = new Date(2037, 10, 19, 15, 23);
+console.log(future);
+console.log(future.getFullYear()); //2037
+console.log(future.getMonth()); //10
+console.log(future.getDate()); //19
+console.log(future.getDay()); //day in the week (4)
+console.log(future.getHours()); //15
+console.log(future.getMinutes()); //23
+console.log(future.getSeconds()); //0
+console.log(future.toISOString()); //2037-11-19T13:23:00.000Z
+console.log(future.getTime()); //2142249780000
+//The getTime() method of Date instances returns the number of milliseconds for this date 
+//since the epoch, which is defined as the midnight at the beginning of January 1, 1970, UTC.
+
+console.log(new Date(2142256980000)); //Thu Nov 19 2037 17:23:00 GMT+0200 (Eastern European Standard Time)
+
+console.log(Date.now()); //1699469421521
+//The Date.now() static method returns the number of milliseconds elapsed since the epoch, 
+//which is defined as the midnight at the beginning of January 1, 1970, UTC.
+
+future.setFullYear(2040); //Mon Nov 19 2040 15:23:00 GMT+0200 (Eastern European Standard Time)
+console.log(future);
+
+
+///////////////////////////////////////
+
+// Operations With Dates
+const future = new Date(2037, 10, 19, 15, 23);
+console.log(+future); //2142249780000
+
+const calcDaysPassed = (date1, date2) =>
+  Math.abs(date2 - date1) / (1000 * 60 * 60 * 24);
+
+const days1 = calcDaysPassed(new Date(2037, 3, 4), new Date(2037, 3, 14));
+console.log(days1); //10
+
+
+///////////////////////////////////////
+// Internationalizing Numbers (Intl)
+const num = 3884764.23;
+
+const options = {
+  style: 'currency',
+  unit: 'celsius',
+  currency: 'EUR',
+  // useGrouping: false,
+};
+
+console.log('US:      ', new Intl.NumberFormat('en-US', options).format(num)); //US:       €3,884,764.23
+console.log('Germany: ', new Intl.NumberFormat('de-DE', options).format(num));//Germany:  3.884.764,23 €
+console.log('Syria:   ', new Intl.NumberFormat('ar-SY', options).format(num));//Syria:    ٣٬٨٨٤٬٧٦٤٫٢٣ €
+console.log(
+  navigator.language,
+  new Intl.NumberFormat(navigator.language, options).format(num)
+); //en-US €3,884,764.23
+
+
+///////////////////////////////////////
+// Timers
+
+// setTimeout
+const ingredients = ['olives', 'spinach'];
+const pizzaTimer = setTimeout(
+  (ing1, ing2) => console.log(`Here is your pizza with ${ing1} and ${ing2} 🍕`),
+  3000,
+  ...ingredients
+);
+console.log('Waiting...');
+
+if (ingredients.includes('spinach')) clearTimeout(pizzaTimer);
+
+// setInterval
+/*
+setInterval(function () {
+  const now = new Date();
+  console.log(now);
+}, 1000);
 */
