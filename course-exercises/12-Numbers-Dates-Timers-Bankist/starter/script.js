@@ -20,10 +20,10 @@ const account1 = {
     '2019-12-23T07:42:02.383Z',
     '2020-01-28T09:15:04.904Z',
     '2020-04-01T10:17:24.185Z',
-    '2020-05-08T14:11:59.604Z',
-    '2020-05-27T17:01:17.194Z',
-    '2020-07-11T23:36:17.929Z',
-    '2020-07-12T10:51:36.790Z',
+    '2023-11-06T10:51:36.790Z',
+    '2023-11-07T23:36:17.929Z',
+    '2023-11-08T17:01:17.194Z',
+    '2023-11-09T14:11:59.604Z',
   ],
   currency: 'EUR',
   locale: 'pt-PT', // de-DE
@@ -48,6 +48,8 @@ const account2 = {
   currency: 'USD',
   locale: 'en-US',
 };
+
+// console.log(new Date(account1.movementsDates[0]));
 
 const accounts = [account1, account2];
 
@@ -80,6 +82,21 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 /////////////////////////////////////////////////
 // Functions
+//Display Date
+const displayDate = date => {
+  const calsDaysPassed = (date1, date2) => {
+    return Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24))
+  }
+  const daysPassed = calsDaysPassed(date, new Date())
+  if (daysPassed === 0) return 'Today'
+  if (daysPassed === 1) return 'Yesterday'
+  if (daysPassed <= 7) return `${daysPassed} days ago`
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 //Display Movements
 const displayMovements = (currentUser, sorted = false) => {
   containerMovements.innerHTML = '';
@@ -87,11 +104,7 @@ const displayMovements = (currentUser, sorted = false) => {
     ? currentUser.movements.slice().sort((a, b) => a - b)
     : currentUser.movements;
   movs.forEach((value, i) => {
-    const movDate = new Date(currentUser.movementsDates[i]);
-    const day = movDate.getDate().toString().padStart(2, '0');
-    const month = (movDate.getMonth() + 1).toString().padStart(2, '0');
-    const year = movDate.getFullYear();
-    const date = `${day}/${month}/${year}`;
+    const date = displayDate(new Date(currentUser.movementsDates[i]));
     let type;
     value > 0 ? (type = 'deposit') : (type = 'withdrawal');
     const html = `<div class="movements__row">
@@ -157,10 +170,10 @@ const updateUI = currentUser => {
 //Event handlers
 let currentUser;
 
-// //Fake login
-// currentUser = account1;
-// containerApp.style.opacity = 100;
-// updateUI(currentUser);
+//Fake login
+currentUser = account1;
+containerApp.style.opacity = 100;
+updateUI(currentUser);
 
 //Implement login
 btnLogin.addEventListener('click', e => {
@@ -211,10 +224,9 @@ btnTransfer.addEventListener('click', e => {
     currentUser.username !== receiverAcc.username
   ) {
     currentUser.movements.push(-inputTransferAmount.value);
-    currentUser.movementsDates.push(new Date().toISOString())
+    currentUser.movementsDates.push(new Date().toISOString());
     receiverAcc.movements.push(+inputTransferAmount.value);
-    receiverAcc.movementsDates.push(new Date().toISOString())
-
+    receiverAcc.movementsDates.push(new Date().toISOString());
   }
 
   //Clear input fields
@@ -233,7 +245,7 @@ btnLoan.addEventListener('click', e => {
     currentUser.movements.some(mov => mov >= 0.1 * +inputLoanAmount.value)
   ) {
     currentUser.movements.push(+inputLoanAmount.value);
-    currentUser.movementsDates.push(new Date().toISOString())
+    currentUser.movementsDates.push(new Date().toISOString());
 
     //Clear input fields
     inputLoanAmount.value = '';
