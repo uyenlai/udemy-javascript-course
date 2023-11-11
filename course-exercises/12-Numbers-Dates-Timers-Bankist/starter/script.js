@@ -82,7 +82,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 /////////////////////////////////////////////////
 // Functions
-//Display Date
+//Format Date
 const displayDate = (date, locale) => {
   const calsDaysPassed = (date1, date2) => {
     return Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24))
@@ -95,9 +95,20 @@ const displayDate = (date, locale) => {
   // const month = (date.getMonth() + 1).toString().padStart(2, '0');
   // const year = date.getFullYear();
   // return `${day}/${month}/${year}`;
-  const localeMovsDate = new Intl.DateTimeFormat(locale).format(date)
-  return localeMovsDate
+  return new Intl.DateTimeFormat(locale).format(date)
 };
+
+//Format currency
+// const options = {
+//   style: 'currency',
+//   currency: currentUser.currency
+// }
+const formatCur = (value, locale,  currency) => {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency
+  }).format(value)
+}
 
 //Display Movements
 const displayMovements = (currentUser, sorted = false) => {
@@ -105,14 +116,15 @@ const displayMovements = (currentUser, sorted = false) => {
   const movs = sorted
     ? currentUser.movements.slice().sort((a, b) => a - b)
     : currentUser.movements;
-  movs.forEach((value, i) => {
+  movs.forEach((mov, i) => {
     const date = displayDate(new Date(currentUser.movementsDates[i]), currentUser.locale);
+    const currency = formatCur(mov, currentUser.locale, currentUser.currency)
     let type;
-    value > 0 ? (type = 'deposit') : (type = 'withdrawal');
+    mov > 0 ? (type = 'deposit') : (type = 'withdrawal');
     const html = `<div class="movements__row">
     <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
     <div class="movements__date">${date}</div>
-    <div class="movements__value">${value.toFixed(2)} €</div>
+    <div class="movements__value">${currency}</div>
     </div>`;
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
@@ -124,7 +136,7 @@ const calcDisplayBalance = currentUser => {
     (acc, mov) => acc + mov,
     0
   );
-  labelBalance.textContent = `${currentUser.balance.toFixed(2)} €`;
+  labelBalance.textContent = formatCur(currentUser.balance, currentUser.locale, currentUser.currency);
 };
 
 //Display Summary
@@ -132,11 +144,11 @@ const calcDisplaySummary = currentUser => {
   const incomes = currentUser.movements
     .filter(mov => mov > 0)
     .reduce((sum, mov) => sum + mov, 0);
-  labelSumIn.textContent = `${incomes.toFixed(2)} €`;
+  labelSumIn.textContent = formatCur(incomes, currentUser.locale, currentUser.currency)
   const out = currentUser.movements
     .filter(mov => mov < 0)
     .reduce((sum, mov) => sum + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out).toFixed(2)} €`;
+  labelSumOut.textContent = formatCur(Math.abs(out), currentUser.locale, currentUser.currency);
   const interest = currentUser.movements
     .filter(mov => mov > 0)
     .map(deposit => {
@@ -144,7 +156,7 @@ const calcDisplaySummary = currentUser => {
     })
     .filter(int => int >= 1)
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest.toFixed(2)} €`;
+  labelSumInterest.textContent = formatCur(interest, currentUser.locale, currentUser.currency)
 };
 
 //Create Username
