@@ -155,25 +155,42 @@ nav.addEventListener('mouseout', e => {
 // Sticky navigation: Intersection Observer API
 
 const header = document.querySelector('.header');
-const navHeight = nav.getBoundingClientRect().height;
+const navHeight = nav.getBoundingClientRect();
 
-const stickyNav = function (entries) {
-  const [entry] = entries;
-  // console.log(entry);
-
+const stickyNav = entries => {
+  //console.log(entries);//array
+  const [entry] = entries; //entry = entries[0]
+  //console.log(entry);
   if (!entry.isIntersecting) nav.classList.add('sticky');
   else nav.classList.remove('sticky');
 };
 
 const headerObserver = new IntersectionObserver(stickyNav, {
-  root: null,
+  root: null, //interesting is the entire the viewport
   threshold: 0,
-  rootMargin: `-${navHeight}px`,
+  rootMargin: `-${navHeight.height}px`,
 });
-
 headerObserver.observe(header);
 
+//Reveal sections
+const allSections = document.querySelectorAll('.section');
+const revealSection = (entries, observer) => {
+  const [entry] = entries;
+  console.log(entry);
+  if (!entry.isIntersecting) return;
 
+  entry.target.classList.remove('section--hidden');
+  observer.unobserve(entry.target);
+};
+const sectionObserver = new IntersectionObserver(revealSection, {
+  root: null,
+  threshold: 0.15,
+});
+
+allSections.forEach(section => {
+  sectionObserver.observe(section);
+  section.classList.add('section--hidden');
+});
 ///////////////////////////////////////
 ///////////////////////////////////////
 //LECTURES
@@ -328,4 +345,22 @@ console.log(h1.parentElement.children);
 [...h1.parentElement.children].forEach(function (el) {
   if (el !== h1) el.style.transform = 'scale(0.5)';
 });
+*/
+
+///////////////////////////////////////
+// Sticky navigation: Intersection Observer API
+/*
+const obsCallback = function (entries, observer) {
+  entries.forEach(entry => {
+    console.log(entry);
+  });
+};
+
+const obsOptions = {
+  root: null,
+  threshold: [0, 0.2],
+};
+
+const observer = new IntersectionObserver(obsCallback, obsOptions);
+observer.observe(section1);
 */
