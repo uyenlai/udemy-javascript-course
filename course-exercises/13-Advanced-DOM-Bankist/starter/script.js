@@ -2,11 +2,17 @@
 
 ///////////////////////////////////////
 // Modal window
-
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
+const btnScrollTo = document.querySelector('.btn--scroll-to');
+const section1 = document.querySelector('#section--1');
+const nav = document.querySelector('.nav');
+const logo = document.querySelector('img');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContent = document.querySelectorAll('.operations__content');
 
 const openModal = function (e) {
   e.preventDefault();
@@ -31,9 +37,6 @@ document.addEventListener('keydown', function (e) {
     closeModal();
   }
 });
-
-const btnScrollTo = document.querySelector('.btn--scroll-to');
-const section1 = document.querySelector('#section--1');
 
 btnScrollTo.addEventListener('click', e => {
   const s1coords = section1.getBoundingClientRect();
@@ -81,13 +84,9 @@ document.querySelector('.nav__links').addEventListener('click', e => {
 });
 
 //Tabbed Component
-const tabsContainer = document.querySelector('.operations__tab-container')
-const tabs = document.querySelectorAll('.operations__tab')
-const tabsContent = document.querySelectorAll('.operations__content')
-
-tabsContainer.addEventListener('click', (e) => {
-  const clicked = e.target.closest('.operations__tab')
-  console.log(clicked);
+tabsContainer.addEventListener('click', e => {
+  const clicked = e.target.closest('.operations__tab');
+  //console.log(clicked);
 
   //Method 1
   // if (clicked) { //clicked will return either null or the matched element from closest(), null is falsy value
@@ -95,18 +94,48 @@ tabsContainer.addEventListener('click', (e) => {
   // }
 
   //Method 2
-  if(!clicked) return; //if clicked is null then return and the function stops operating
-  
+  if (!clicked) return; //if clicked is null then return and the function stops operating
+
   //Before adding the active class to any element, first remove active class from all elements
-  tabs.forEach(t => t.classList.remove('operations__tab--active'))
-  tabsContent.forEach(c => c.classList.remove('operations__content--active'))
+  tabs.forEach(t => t.classList.remove('operations__tab--active'));
+  tabsContent.forEach(c => c.classList.remove('operations__content--active'));
   //Activate tab
-  clicked.classList.add('operations__tab--active')
+  clicked.classList.add('operations__tab--active');
 
   //Activate content
-  console.log(clicked.dataset.tab);
-  document.querySelector(`.operations__content--${clicked.dataset.tab}`).classList.add('operations__content--active')
-})
+  //console.log(clicked.dataset.tab);
+  document
+    .querySelector(`.operations__content--${clicked.dataset.tab}`)
+    .classList.add('operations__content--active');
+});
+
+//Menu fade animation
+const hoverNav = (e, opacity) => {
+  if (e.target.classList.contains('nav__link')) {
+    const link = e.target;
+    //console.log(link);
+    const siblings = link.closest('.nav').querySelectorAll('.nav__link');
+    //console.log(siblings);
+    
+    siblings.forEach(el => {
+      if (el !== link) el.style.opacity = opacity;
+    });
+    logo.style.opacity = opacity;
+  }
+};
+
+//Method 1
+nav.addEventListener('mouseover', e => {
+  hoverNav(e, 0.5)
+});
+
+nav.addEventListener('mouseout', e => {
+  hoverNav(e, 1)
+});
+
+//Method 2
+// nav.addEventListener('mouseover', hoverNav.bind(0.5));
+// nav.addEventListener('mouseout', hoverNav.bind(1));
 
 
 ///////////////////////////////////////
