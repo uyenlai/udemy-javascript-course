@@ -9,7 +9,7 @@ const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 
 const openModal = function (e) {
-  e.preventDefault()
+  e.preventDefault();
   modal.classList.remove('hidden');
   overlay.classList.remove('hidden');
 };
@@ -19,9 +19,9 @@ const closeModal = function () {
   overlay.classList.add('hidden');
 };
 
-btnsOpenModal.forEach((btnOpenModal) => {
+btnsOpenModal.forEach(btnOpenModal => {
   btnOpenModal.addEventListener('click', openModal);
-})
+});
 
 btnCloseModal.addEventListener('click', closeModal);
 overlay.addEventListener('click', closeModal);
@@ -32,11 +32,11 @@ document.addEventListener('keydown', function (e) {
   }
 });
 
-const btnScrollTo = document.querySelector('.btn--scroll-to')
-const section1 = document.querySelector('#section--1')
+const btnScrollTo = document.querySelector('.btn--scroll-to');
+const section1 = document.querySelector('#section--1');
 
-btnScrollTo.addEventListener('click', (e) => {
-  const s1coords = section1.getBoundingClientRect()
+btnScrollTo.addEventListener('click', e => {
+  const s1coords = section1.getBoundingClientRect();
   console.log(s1coords);
 
   console.log(e.target.getBoundingClientRect());
@@ -45,16 +45,40 @@ btnScrollTo.addEventListener('click', (e) => {
 
   //Scrolling
   // window.scrollTo({
-  //   left: s1coords.left + window.pageXOffset, 
+  //   left: s1coords.left + window.pageXOffset,
   //   top: s1coords.top + window.pageYOffset,
   //   behavior: 'smooth'
   // })
 
   //For new browser
-  section1.scrollIntoView({behavior: 'smooth'})
-})
+  section1.scrollIntoView({ behavior: 'smooth' });
+});
 
+//Navigation smooth scroll
 
+//This way is not efficient as it will creates multiple
+//same event listeners which affects performance
+// document.querySelectorAll('.nav__link').forEach((el) => {
+//   el.addEventListener('click', (e) => {
+//     e.preventDefault();
+//     //this in this case is the element which invokes the event listener
+//     const id = el.getAttribute('href')
+//     console.log(id);
+//     document.querySelector(id).scrollIntoView({behavior: 'smooth'})
+//   })
+// })
+
+//Using event delegation
+// 1. Add event listener to common parent element
+// 2. Determine what element originated the event
+document.querySelector('.nav__links').addEventListener('click', e => {
+  e.preventDefault();
+
+  if (e.target.classList.contains('nav__link')) {
+    const id = e.target.getAttribute('href');
+    document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
+  }
+});
 ///////////////////////////////////////
 ///////////////////////////////////////
 ///////////////////////////////////////
