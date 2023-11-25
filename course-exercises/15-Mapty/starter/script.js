@@ -50,3 +50,4 @@ if (navigator.geolocation) {
     }
   );
 }
+
