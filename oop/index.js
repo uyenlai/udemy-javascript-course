@@ -18,3 +18,13 @@ console.log(uyen);
 
 const chinh = new Person("Chinh", 2001);
 const dung = new Person("Dung", 2008);
+
+console.log(Person.prototype);
+Person.prototype.calcAge = function () {
+  console.log(2037 - this.birthYear);
+};
+
+console.log(uyen.__proto__);
+uyen.calcAge()
+chinh.calcAge()
+dung.calcAge()
