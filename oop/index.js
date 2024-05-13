@@ -40,6 +40,7 @@ const Duck = function (type, canFly) {
 const vittroi = new Duck("vittroi", "no");
 console.log(vittroi);
 
+
 // (567/704)
 const Dog = function (name, breed, weight) {
   this.name = name;
@@ -61,6 +62,7 @@ for (let i = 0; i < dogs.length; i++) {
   }
   console.log("Dog: " + dogs[i].name + " is a " + size + " " + dogs[i].breed);
 }
+*/
 
 // 571/704
 function Coffee(roast, ounces) {
@@ -70,22 +72,27 @@ function Coffee(roast, ounces) {
   let size;
   this.getSize = function () {
     if (this.ounces < 10) {
-      return (size = "small");
+      size = "small";
+      return `${this.ounces}oz is a ${size}`;
     } else if (this.ounces < 16 && this.ounces > 10) {
-      return (size = "medium");
-    } else if (this.ounces === 16 && this.ounces > 16) {
-      return (size = "large");
+      size = "medium";
+      return `${this.ounces}oz is a ${size}`;
+    } else if (this.ounces === 16 || this.ounces > 16) {
+      size = "large";
+      return `${this.ounces}oz is a ${size}`;
     }
   };
 
-  this.toString = function (size) {
+  this.toString = function () {
     return `You ordered a ${size} ${this.roast} coffee`;
   };
 }
 
 var houseBlend = new Coffee("House Blend", 12);
+console.log(houseBlend.getSize());
 console.log(houseBlend.toString());
 var darkRoast = new Coffee("Dark Roast", 16);
+console.log(darkRoast.getSize());
 console.log(darkRoast.toString());
 
 // 576/704
@@ -197,7 +204,6 @@ function Car(params) {
     }
   };
 }
-*/
 
 // Understanding Object Instances (584/704)
 function dogCatcher(obj) {
@@ -237,3 +243,8 @@ for (var i = 0; i < dogs.length; i++) {
     console.log(dogs[i].name + " is a dog!");
   }
 }
+
+var date = new Date();
+console.log(typeof date);
+const year = date.getFullYear();
+console.log(year);
