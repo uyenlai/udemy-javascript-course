@@ -152,6 +152,7 @@ console.log(darkRoast.toString());
 //   cars[i].stop();
 // }
 
+/*
 // Rewiring the arguments as an object literal
 var cadiParams = {
   make: "GM",
@@ -248,3 +249,45 @@ var date = new Date();
 console.log(typeof date);
 const year = date.getFullYear();
 console.log(year);
+*/
+/* -------------------------------------------------------------------------------- */
+
+// How to set up the prototype
+
+//this is the constructor
+var Dog = function (name, breed, weight) {
+  this.name = name;
+  this.breed = breed;
+  this.weight = weight;
+};
+
+//this is a dog instance
+var spot = new Dog("Spot", "Chihuahua", 10);
+console.log(spot);
+
+//set up the prototype
+Dog.prototype.species = "Canine";
+
+Dog.prototype.bark = function () {
+  if (this.weight > 25) {
+    console.log(this.name + " says Woof!");
+  } else {
+    console.log(this.name + " says Yip!");
+  }
+};
+Dog.prototype.run = function () {
+  console.log("Run!");
+};
+Dog.prototype.wag = function () {
+  console.log("Wag!");
+};
+
+var fido = new Dog("Fido", "Mixed", 38);
+var fluffy = new Dog("Fluffy", "Poodle", 30);
+
+fido.bark();
+fido.run();
+fido.wag();
+fluffy.bark();
+fluffy.run();
+fluffy.wag();
