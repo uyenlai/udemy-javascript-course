@@ -267,6 +267,7 @@ console.log(spot);
 
 //set up the prototype
 Dog.prototype.species = "Canine";
+Dog.prototype.sitting = false;
 
 Dog.prototype.bark = function () {
   if (this.weight > 25) {
@@ -281,6 +282,14 @@ Dog.prototype.run = function () {
 Dog.prototype.wag = function () {
   console.log("Wag!");
 };
+Dog.prototype.sit = function () {
+  if (this.sitting) {
+    console.log(`${this.name} is already sitting`);
+  } else {
+    this.sitting = true;
+    console.log(`${this.name} is now sitting`);
+  }
+};
 
 var fido = new Dog("Fido", "Mixed", 38);
 var fluffy = new Dog("Fluffy", "Poodle", 30);
@@ -288,9 +297,11 @@ var fluffy = new Dog("Fluffy", "Poodle", 30);
 fido.bark();
 fido.run();
 fido.wag();
+fido.sit();
 fluffy.bark();
 fluffy.run();
 fluffy.wag();
+fluffy.sit();
 
 //overriding the prototype
 spot.bark = function () {
@@ -299,7 +310,12 @@ spot.bark = function () {
 spot.bark();
 spot.run();
 spot.wag();
+spot.sit();
 
+console.log(spot.hasOwnProperty("species"));
+console.log(fido.hasOwnProperty("species"));
+
+/*
 // Exercise 619/704
 function Robot(name, year, owner) {
   this.name = name;
@@ -349,3 +365,62 @@ console.log(
     rosie.owner
 );
 rosie.cleanHouse();
+*/
+
+// Exercise 623/704
+/*
+function Game() {
+  this.level = 0;
+}
+Game.prototype.play = function () {
+  // player plays game here
+  this.level++;
+  console.log("Welcome to level " + this.level);
+  this.unlock();
+};
+Game.prototype.unlock = function () {
+  if (this.level === 42) {
+    Robot.prototype.deployLaser = function () {
+      console.log(`${this.name} is blasting you with laser beams`);
+    };
+  }
+};
+
+function Robot(name, year, owner) {
+  this.name = name;
+  this.year = year;
+  this.owner = owner;
+}
+var game = new Game();
+var robby = new Robot("Robby", 1956, "Dr. Morbius");
+var rosie = new Robot("Rosie", 1962, "George Jetson");
+while (game.level < 42) {
+  game.play();
+}
+robby.deployLaser();
+rosie.deployLaser();
+*/
+
+// Exercise 627/704
+function Robot(name, year, owner) {
+  this.name = name;
+  this.year = year;
+  this.owner = owner;
+}
+Robot.prototype.maker = "ObjectsRUs";
+Robot.prototype.errorMessage = "All systems go.";
+Robot.prototype.reportError = function () {
+  console.log(this.name + " says " + this.errorMessage);
+};
+Robot.prototype.spillWater = function () {
+  this.errorMessage = "I appear to have a short circuit!";
+};
+var robby = new Robot("Robby", 1956, "Dr. Morbius");
+var rosie = new Robot("Rosie", 1962, "George Jetson");
+rosie.reportError();
+robby.reportError();
+robby.spillWater();
+rosie.reportError();
+robby.reportError();
+console.log(robby.hasOwnProperty("errorMessage")); //true
+console.log(rosie.hasOwnProperty("errorMessage")); //false
