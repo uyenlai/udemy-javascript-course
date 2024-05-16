@@ -261,6 +261,7 @@ var Dog = function (name, breed, weight) {
   this.weight = weight;
 };
 
+
 //this is a dog instance
 var spot = new Dog("Spot", "Chihuahua", 10);
 console.log(spot);
@@ -293,7 +294,7 @@ Dog.prototype.sit = function () {
 
 var fido = new Dog("Fido", "Mixed", 38);
 var fluffy = new Dog("Fluffy", "Poodle", 30);
-
+/*
 fido.bark();
 fido.run();
 fido.wag();
@@ -315,7 +316,6 @@ spot.sit();
 console.log(spot.hasOwnProperty("species"));
 console.log(fido.hasOwnProperty("species"));
 
-/*
 // Exercise 619/704
 function Robot(name, year, owner) {
   this.name = name;
@@ -365,7 +365,6 @@ console.log(
     rosie.owner
 );
 rosie.cleanHouse();
-*/
 
 // Exercise 623/704
 /*
@@ -402,6 +401,7 @@ rosie.deployLaser();
 */
 
 // Exercise 627/704
+/*
 function Robot(name, year, owner) {
   this.name = name;
   this.year = year;
@@ -424,3 +424,62 @@ rosie.reportError();
 robby.reportError();
 console.log(robby.hasOwnProperty("errorMessage")); //true
 console.log(rosie.hasOwnProperty("errorMessage")); //false
+
+
+//Exercise 639/704
+function SpaceRobot(name, year, owner, homePlanet) {
+  this.name = name;
+  this.year = year;
+  this.owner = owner;
+  this.homePlanet = homePlanet;
+}
+
+SpaceRobot.prototype = new Robot();
+SpaceRobot.prototype.speak = function () {
+  console.log(this.name + " says Sir, If I may venture an opinion...");
+};
+SpaceRobot.prototype.pilot = function () {
+  console.log(this.name + " says Thrusters? Are they important?");
+};
+var c3po = new SpaceRobot("C3PO", 1977, "Luke Skywalker", "Tatooine");
+c3po.speak();
+c3po.pilot();
+console.log(c3po.name + " was made by " + c3po.maker);
+var simon = new SpaceRobot("Simon", 2009, "Carla Diana", "Earth");
+simon.makeCoffee();
+simon.blinkLights();
+simon.speak();
+*/
+
+//cleanup the code
+function ShowDog(name, breed, weight, handler) {
+  Dog.call(this, name, breed, weight);
+  this.handler = handler;
+}
+ShowDog.prototype = new Dog();
+ShowDog.prototype.constructor = ShowDog;
+ShowDog.prototype.league = "Webville";
+ShowDog.prototype.stack = function () {
+  console.log("Stack");
+};
+ShowDog.prototype.bait = function () {
+  console.log("Bait");
+};
+ShowDog.prototype.gait = function (kind) {
+  console.log(kind + "ing");
+};
+ShowDog.prototype.groom = function () {
+  console.log("Groom");
+};
+var fido = new Dog("Fido", "Mixed", 38);
+var fluffy = new Dog("Fluffy", "Poodle", 30);
+var spot = new Dog("Spot", "Chihuahua", 10);
+var scotty = new ShowDog("Scotty", "Scottish Terrier", 15, "Cookie");
+var beatrice = new ShowDog("Beatrice", "Pomeranian", 5, "Hamilton");
+fido.bark();
+fluffy.bark();
+spot.bark();
+scotty.bark();
+beatrice.bark();
+scotty.gait("Walk");
+beatrice.groom();
