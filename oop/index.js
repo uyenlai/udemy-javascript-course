@@ -505,3 +505,38 @@ for (var i = 0; i < sentences.length; i++) {
     console.log("CLICHE ALERT: " + phrase);
   }
 }
+
+//ES6 Classes
+class Vacation {
+  constructor(destination, length) {
+    this.destination = destination;
+    this.length = length;
+  }
+
+  print() {
+    console.log(`${this.destination} will take ${this.length} days.`);
+  }
+}
+
+const trip = new Vacation("Chile", 3);
+trip.print();
+
+class Expedition extends Vacation {
+  constructor(destination, length, gear) {
+    super(destination, length);
+    this.gear = gear;
+  }
+
+  print() {
+    super.print();
+    console.log(`Bring ${this.gear.join(" and your ")}`);
+  }
+}
+
+const trip2 = new Expedition("Mt.Whitney", 5, [
+  "sunglasses",
+  "prayer flags",
+  "camera",
+]);
+
+trip2.print()
