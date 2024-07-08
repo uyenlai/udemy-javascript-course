@@ -1,4 +1,3 @@
-"use strict";
 //Objects
 
 const iphone = {
@@ -119,3 +118,105 @@ function myFunc() {
 
 myFunc();
 window.myFunc(); //window object
+console.log("---------------------------------------------------");
+
+/** ---------------------------------------------------------------- */
+console.log("Bind() method");
+
+this.firstName = "Minh";
+this.lastName = "Thu";
+
+const teacher = {
+  firstName: "Minh",
+  lastName: "Thao",
+  getFullName(data1, data2) {
+    console.log(data1, data2);
+    console.log(`${this.firstName} ${this.lastName}`);
+  },
+};
+
+const student = {
+  firstName: "Uyen",
+  lastName: "Lai",
+};
+
+// Case 1:
+teacher.getFullName(); // Minh Thao
+
+// Case 2:
+const getTeacherName = teacher.getFullName.bind(teacher, "num1", "num2");
+const getStudentName = teacher.getFullName.bind(student);
+console.log(getTeacherName === teacher.getFullName);
+getTeacherName(); // Minh Thu
+getStudentName("num3", "num4"); // UyenLai
+
+// Example: Click button log the details
+const animal = {
+  species: "Bird",
+  color: "white",
+
+  getDetails() {
+    console.log(`${this.species} is ${this.color}`);
+  },
+};
+
+const bird = animal.getDetails();
+
+const bindBtn = document.getElementById("bind-btn");
+
+bindBtn.addEventListener("click", animal.getDetails.bind(animal));
+
+// const heading = document.querySelector('#heading')
+// console.log(heading);
+
+const $ = document.querySelector.bind(document);
+const $$ = document.querySelectorAll.bind(document);
+
+console.log($("#heading"));
+
+// Add car example
+const input = document.querySelector("#input");
+const addBtn = document.querySelector("#add-btn");
+const root = document.querySelector("#root");
+
+const app = () => {
+  const cars = [];
+
+  return {
+    add(car) {
+      cars.push(car);
+    },
+    remove(index) {
+      cars.splice(index, 1);
+    },
+    render() {
+      const html = cars
+        .map(
+          (car, index) =>
+            `<li>${car}   <button class='remove-btn' data-index=${index}>Remove</button></li>`
+        )
+        .join("");
+      root.innerHTML = html;
+      input.value = "";
+      input.focus();
+    },
+    init() {
+      addBtn.addEventListener("click", () => {
+        const car = input.value;
+        this.add(car);
+        this.render();
+      });
+      root.addEventListener("click", (e) => {
+        if (e.target.classList.contains("remove-btn")) {
+          this.remove(e.target.dataset.index);
+          this.render();
+        }
+      });
+    },
+  };
+};
+
+const myApp = app();
+
+// app returns an object
+myApp.init();
